@@ -51,4 +51,4 @@ The software is available under the [MIT License](https://github.com/lumos-vis/l
 
 
 ## Contact
-If you have any questions, feel free to [open an issue](https://github.com/lumos-vis/lumos/issues/new/choose) or contact [Arpit Narechania](http://narechania.com).
+If you have any questions, feel free to [open an issue](https://github.com/lumos-vis/lumos/issues/new/choose) or contact [Arpit Narechania](https://narechania.com).
