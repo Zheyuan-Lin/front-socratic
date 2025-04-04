@@ -53,6 +53,11 @@ export class MainActivityComponent implements OnInit, AfterViewInit {
   plotHeight: number;
   plotGroup: any;
 
+  // User Insights Properties
+  userInsight: string = '';
+  pastInsights: Array<{text: string, timestamp: string}> = [];
+  canContinue: boolean = false;
+
   constructor(
     private route: ActivatedRoute,
     public utilsService: UtilsService,
@@ -1424,6 +1429,47 @@ export class MainActivityComponent implements OnInit, AfterViewInit {
         break;
     }
     return arrayCopy;
+  }
+
+  /**
+   * Save user insights to the server
+   */
+  saveUserInsight() {
+    if (!this.userInsight.trim()) {
+      return;
+    }
+    
+    // Prepare and send a new message
+    let message = this.utilsService.initializeNewMessage(this);
+    message.interactionType = InteractionTypes.SAVE_USER_INSIGHT;
+    message.data = {
+      insight: this.userInsight,
+      timestamp: new Date().toISOString(),
+      eventX: null,
+      eventY: null
+    };
+    
+    // Add to past insights array
+    this.pastInsights.unshift({
+      text: this.userInsight,
+      timestamp: new Date().toLocaleString()
+    });
+    
+    // Check if user can continue (has 5+ insights)
+    this.canContinue = this.pastInsights.length >= 5;
+    
+    // Clear the insight field after sending
+    this.userInsight = '';
+  }
+
+  /**
+   * Continue after saving insights
+   */
+  continueAfterInsights() {
+    if (this.pastInsights.length < 5) {
+      return;
+    }
+    
   }
 }
 
