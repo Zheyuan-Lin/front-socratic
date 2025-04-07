@@ -1436,32 +1436,33 @@ export class MainActivityComponent implements OnInit, AfterViewInit {
    */
   saveUserInsight() {
     if (!this.userInsight.trim()) {
-      return;
+        return;
     }
     
-    // Prepare and send a new message
+    // Prepare the message
     let message = this.utilsService.initializeNewMessage(this);
-    message.interactionType = InteractionTypes.SAVE_USER_INSIGHT;
     message.data = {
-      insight: this.userInsight,
-      timestamp: new Date().toISOString(),
-      eventX: null,
-      eventY: null
+        insight: this.userInsight,
+        timestamp: new Date().toISOString(),
+        group: "socratic",
+        participantId: this.global.participantId  // Adding participant ID
     };
     
-    // Add to past insights array
+    // Send to backend via websocket
+    this.chatService.sendInsights(message);
+    
+    // Add to past insights array in frontend
     this.pastInsights.unshift({
-      text: this.userInsight,
-      timestamp: new Date().toLocaleString()
+        text: this.userInsight,
+        timestamp: new Date().toLocaleString()
     });
     
-    // Check if user can continue (has 5+ insights)
+    // Update continue button state
     this.canContinue = this.pastInsights.length >= 5;
     
     // Clear the insight field after sending
     this.userInsight = '';
   }
-
   /**
    * Continue after saving insights
    */
@@ -1471,6 +1472,8 @@ export class MainActivityComponent implements OnInit, AfterViewInit {
     }
     
   }
+
+  
 }
 
 /** ======================= CONVENIENCE FUNCTIONS ========================= */

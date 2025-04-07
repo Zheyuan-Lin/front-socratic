@@ -20,7 +20,10 @@
     "lib": [
       "es2018",
       "dom"
-    ]
+    ],
+    "paths": {
+      "@app/*": ["src/app/*"]
+    }
   },
   "angularCompilerOptions": {
     "disableTypeScriptVersionCheck": true
