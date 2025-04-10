@@ -20,6 +20,9 @@ import { MessageService } from "./services/message.service";
 import { ChatService } from "./services/socket.service";
 import { UtilsService } from "./services/utils.service";
 import { MainActivityComponent } from "./main-activity/component";
+import { ConsentComponent } from "./consent/consent.component";
+import { PreSurveyComponent } from "./presurvey/presurvey.component";
+import { PostPageComponent } from "./post-page/post-page.component";
 
 const config: SocketIoConfig = {
   url: DeploymentConfig.SERVER_URL,
@@ -29,7 +32,10 @@ const config: SocketIoConfig = {
 @NgModule({
   declarations: [
     AppComponent,
-    MainActivityComponent
+    MainActivityComponent,
+    ConsentComponent,
+    PreSurveyComponent,
+    PostPageComponent
   ],
   imports: [
     NgMultiSelectDropDownModule.forRoot(),

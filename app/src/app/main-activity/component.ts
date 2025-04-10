@@ -664,7 +664,7 @@ export class MainActivityComponent implements OnInit, AfterViewInit {
     this.chatService.removeAllListenersAndDisconnectFromSocket();
     this.global["app-" + this.global.appLevel]["completed"] = true;
     this.global["app-" + this.global.appLevel]["timestamp"] = new Date().toLocaleString();
-    this.router.navigate([path], { queryParams: params });
+    this.router.navigate(['/post']);
   }
 
   /**
