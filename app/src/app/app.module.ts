@@ -10,6 +10,7 @@ import { AngularSplitModule } from "angular-split";
 import { NgSelectModule } from "@ng-select/ng-select";
 import { TooltipModule } from "ng2-tooltip-directive";
 import { OverlayscrollbarsModule } from "overlayscrollbars-ngx";
+import { ReactiveFormsModule } from '@angular/forms';
 // local
 import { AppRoutingModule } from "./app-routing.module";
 import { AppComponent } from "./app.component";
@@ -20,9 +21,9 @@ import { MessageService } from "./services/message.service";
 import { ChatService } from "./services/socket.service";
 import { UtilsService } from "./services/utils.service";
 import { MainActivityComponent } from "./main-activity/component";
-import { ConsentComponent } from "./consent/consent.component";
-import { PreSurveyComponent } from "./presurvey/presurvey.component";
-import { PostPageComponent } from "./post-page/post-page.component";
+import { PreSurveyComponent } from './presurvey/presurvey.component';
+import { PostPageComponent } from './post-page/post-page.component';
+import { ConsentComponent } from './consent/consent.component';
 
 const config: SocketIoConfig = {
   url: DeploymentConfig.SERVER_URL,
@@ -33,9 +34,9 @@ const config: SocketIoConfig = {
   declarations: [
     AppComponent,
     MainActivityComponent,
-    ConsentComponent,
     PreSurveyComponent,
-    PostPageComponent
+    PostPageComponent,
+    ConsentComponent
   ],
   imports: [
     NgMultiSelectDropDownModule.forRoot(),
@@ -49,6 +50,7 @@ const config: SocketIoConfig = {
     HttpClientModule,
     AppRoutingModule,
     SocketIoModule.forRoot(config),
+    ReactiveFormsModule
   ],
   providers: [
     SessionPage,

@@ -6,15 +6,16 @@ import { PreSurveyComponent } from "./presurvey/presurvey.component";
 import { PostPageComponent } from "./post-page/post-page.component";
 
 const routes: Routes = [
-  { path: "", redirectTo: "consent", pathMatch: "full" },
+  { path: "", redirectTo: "/consent", pathMatch: "full" },
   { path: "consent", component: ConsentComponent },
   { path: "presurvey", component: PreSurveyComponent },
   { path: "main", component: MainActivityComponent },
   { path: "post", component: PostPageComponent },
+  { path: "**", redirectTo: "/consent" }  // Catch-all route
 ];
 
 @NgModule({
   imports: [RouterModule.forRoot(routes)],
-  exports: [RouterModule],
+  exports: [RouterModule]
 })
-export class AppRoutingModule {}
+export class AppRoutingModule { }

@@ -52,6 +52,7 @@ export class MainActivityComponent implements OnInit, AfterViewInit {
   plotWidth: number;
   plotHeight: number;
   plotGroup: any;
+  userId: string;
 
   // User Insights Properties
   userInsight: string = '';
@@ -82,6 +83,7 @@ export class MainActivityComponent implements OnInit, AfterViewInit {
       if("level" in params){
         this.global.appLevel = params["level"];
       }
+      this.userId = params['userId'] || localStorage.getItem('userId');
     });
     this.qFilterSliderConfig = (attribute) => {
       let attrConfig = this.appConfig[this.global.appMode]["attributes"][attribute];
@@ -1467,13 +1469,17 @@ export class MainActivityComponent implements OnInit, AfterViewInit {
    * Continue after saving insights
    */
   continueAfterInsights() {
-    if (this.pastInsights.length < 5) {
-      return;
+    if (this.pastInsights.length >= 5) {
+      // Navigate to post survey with userId
+      const userId = this.userId;
+      this.router.navigate(['/post'], { 
+        queryParams: { 
+          userId: userId 
+        }
+      });
     }
-    
   }
 
-  
 }
 
 /** ======================= CONVENIENCE FUNCTIONS ========================= */
