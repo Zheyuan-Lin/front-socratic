@@ -110,6 +110,17 @@ DATA_MAP = {
         ],
         "data": {},
     },
+    "synthetic_voters_v14.csv": {
+        "attributes": [],
+        "distribution": {},
+        "numerical_attributes": [
+            "age",
+            "abortion_view",
+            "gun_control_view", 
+            "immigration_view"
+        ],
+        "data": {},
+    }
 }
 
 
