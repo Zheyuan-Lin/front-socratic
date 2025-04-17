@@ -1458,7 +1458,7 @@ export class MainActivityComponent implements OnInit, AfterViewInit, OnDestroy {
         insight: this.userInsight,
         timestamp: new Date().toISOString(),
         group: "interaction_trace",
-        participantId: this.global.participantId  // Adding participant ID
+        participantId: localStorage.getItem('userId')  // Adding participant ID
     };
     
     // Send to backend via websocket

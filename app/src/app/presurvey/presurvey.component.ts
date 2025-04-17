@@ -165,12 +165,27 @@ export class PreSurveyComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    // Check if returning from survey
+    // Get the full URL and decode it
+    const fullUrl = decodeURIComponent(window.location.href);
+    
+    // Extract userId from URL parameters
     const urlParams = new URLSearchParams(window.location.search);
-    if (urlParams.get('survey_completed') === 'true') {
+    const urlUserId = urlParams.get('userId');
+    
+    if (urlUserId) {
+      // Update the stored userId
+      this.userId = urlUserId;
+      localStorage.setItem('userId', urlUserId);
+    }
+
+    // Check if returning from survey - look for survey_completed in the decoded URL
+    if (fullUrl.includes('survey_completed%3Dtrue')) {
       // Navigate to main with userId
       this.router.navigate(['/main'], {
-        queryParams: { userId: this.userId }
+        queryParams: { 
+          userId: this.userId,
+          level: 'live'
+        }
       });
     }
   }
@@ -203,4 +218,4 @@ export class PreSurveyComponent implements OnInit {
     // Redirect to the survey
     window.location.href = surveyUrlWithParams;
   }
-} 
+}

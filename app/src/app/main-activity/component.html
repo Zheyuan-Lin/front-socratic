@@ -8,7 +8,7 @@
 <div>
   <as-split direction="horizontal" class="border-light h-full" restrictMove="true">
     <!-- COLUMN: Data and Attributes -->
-    <as-split-area [size]="22">
+    <as-split-area [size]="16">
       <as-split direction="vertical" restrictMove="true">
         <!-- ROW: Dataset Selector -->
         <as-split-area [size]="15">
@@ -219,7 +219,7 @@
     </as-split-area>
 
     <!-- COLUMN: Filters, Encodings, and Configurations -->
-    <as-split-area [size]="20">
+    <as-split-area [size]="16">
       <as-split direction="vertical" class="border-light" restrictMove="true">
         <!-- ROW: Encodings -->
         <as-split-area [size]="34">
@@ -546,7 +546,7 @@
     </as-split-area>
 
     <!-- COLUMN: Main VIS -->
-    <as-split-area [size]="global.appType !== 'CONTROL' ? 40 : 60" class="w-100">
+    <as-split-area [size]="68" class="w-100">
       <as-split direction="vertical" restrictMove="true" class="w-100">
         <!-- ROW: Plot Container -->
         <as-split-area [size]="68" style="position: relative">
@@ -681,7 +681,7 @@
     </as-split-area>
 
     <!-- COLUMN: Awareness Panel -->
-    <as-split-area *ngIf="global.appType !== 'CONTROL'" [size]="global.appType !== 'CONTROL' ? 20 : 0">
+    <as-split-area *ngIf="global.appType !== 'CONTROL'" [size]="global.appType !== 'CONTROL' ? 18 : 0">
       <as-split direction="vertical" class="border-light" restrictMove="true">
         <!-- ROW: Awareness Panel -->
         <as-split-area [size]="100">
