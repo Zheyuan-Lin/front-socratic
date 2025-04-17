@@ -2,7 +2,7 @@
 import * as d3 from "d3";
 import $ from "jquery";
 import "bootstrap";
-import { Component, OnInit, AfterViewInit } from "@angular/core";
+import { Component, OnInit, AfterViewInit, OnDestroy } from "@angular/core";
 import { Router } from "@angular/router";
 import { DomSanitizer } from "@angular/platform-browser";
 import { ActivatedRoute } from "@angular/router";
@@ -34,7 +34,7 @@ declare var vegaEmbed: any;
   providers: [ChatService],
   styleUrls: ["./component.scss"],
 })
-export class MainActivityComponent implements OnInit, AfterViewInit {
+export class MainActivityComponent implements OnInit, AfterViewInit, OnDestroy {
   objectKeys: { (o: object): string[]; (o: {}): string[] };
   objectValues: any;
   math: Math;
@@ -58,6 +58,9 @@ export class MainActivityComponent implements OnInit, AfterViewInit {
   userInsight: string = '';
   pastInsights: Array<{text: string, timestamp: string}> = [];
   canContinue: boolean = false;
+  timeRemaining: number = 20 * 60; // 20 minutes in seconds
+  timerInterval: any;
+  canContinueTime: boolean = false;
 
   constructor(
     private route: ActivatedRoute,
@@ -111,6 +114,8 @@ export class MainActivityComponent implements OnInit, AfterViewInit {
    * Required for ng.
    */
   ngOnInit(): void {
+    // Start the timer when component initializes
+    this.startTimer();
     switch (this.global.appLevel) {
       case "practice":
         this.global.appMode = "cars.csv";
@@ -138,6 +143,12 @@ export class MainActivityComponent implements OnInit, AfterViewInit {
    */
   ngAfterViewInit(): void {
     this.setWidthsForAwarenessPanelVis();
+  }
+
+  ngOnDestroy(): void {
+    if (this.timerInterval) {
+      clearInterval(this.timerInterval);
+    }
   }
 
   /**
@@ -1469,8 +1480,7 @@ export class MainActivityComponent implements OnInit, AfterViewInit {
    * Continue after saving insights
    */
   continueAfterInsights() {
-    if (this.pastInsights.length >= 5) {
-      // Navigate to post survey with userId
+    if (this.pastInsights.length >= 5 && this.canContinueTime) {
       const userId = this.userId;
       this.router.navigate(['/post'], { 
         queryParams: { 
@@ -1478,6 +1488,33 @@ export class MainActivityComponent implements OnInit, AfterViewInit {
         }
       });
     }
+  }
+
+  startTimer(): void {
+    this.timerInterval = setInterval(() => {
+      if (this.timeRemaining > 0) {
+        this.timeRemaining--;
+      } else {
+        this.canContinueTime = true;
+        clearInterval(this.timerInterval);
+      }
+    }, 1000);
+  }
+
+  formatTime(): string {
+    const minutes = Math.floor(this.timeRemaining / 60);
+    const seconds = this.timeRemaining % 60;
+    return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+  }
+
+  getButtonTooltip(): string {
+    if (!this.canContinueTime) {
+      return `Please wait ${this.formatTime()} before continuing`;
+    }
+    if (!this.canContinue) {
+      return `Please share ${5 - this.pastInsights.length} more insight${5 - this.pastInsights.length === 1 ? '' : 's'} to continue`;
+    }
+    return 'Click to proceed';
   }
 
 }
