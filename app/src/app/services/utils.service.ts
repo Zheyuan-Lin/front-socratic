@@ -186,7 +186,7 @@ export class UtilsService {
     (message.interactionType = ""),
     (message.interactionDuration = 0),
     (message.interactionAt = this.getCurrentTime()),
-    (message.participantId = context.global.participantId),
+    (message.participantId = localStorage.getItem("userId")),
     (message.data = {});
     return message;
   }

@@ -158,41 +158,14 @@ async def on_interaction(sid, data):
         response["output_data"] = metrics
         
         # Sanitize the data for Firestore
-        interaction_data = {
+    interaction_data = {
             "interaction_type": interaction_type,
             "participant_id": pid,
-            "app_mode": app_mode,
             "timestamp": datetime.now().isoformat()
-        }
-        
-        # Convert data and metrics to serializable format
-        try:
-            # Convert data to dict if it's not already
-            if isinstance(data, dict):
-                sanitized_data = {k: str(v) if not isinstance(v, (str, int, float, bool)) else v 
-                                for k, v in data.items()}
-            else:
-                sanitized_data = str(data)
-                
-            # Convert metrics to dict if it's not already
-            if isinstance(metrics, dict):
-                sanitized_metrics = {k: str(v) if not isinstance(v, (str, int, float, bool)) else v 
-                                   for k, v in metrics.items()}
-            else:
-                sanitized_metrics = str(metrics)
-                
-            interaction_data["data"] = sanitized_data
-            interaction_data["metrics"] = sanitized_metrics
-            
+    }              
             # Store in Firestore
-            db.collection('interactions').add(interaction_data)
-            print(f"Stored interaction successfully")
-        except Exception as e:
-            print(f"Error storing interaction: {e}")
-            print(f"Problematic data: {data}")
-            print(f"Problematic metrics: {metrics}")
-    else:
-        response["output_data"] = None
+    db.collection('interactions').add(interaction_data)
+    print(f"Stored interaction successfully")
 
     # # save response
     # CLIENTS[pid]["response_list"].append(response)
