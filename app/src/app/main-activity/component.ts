@@ -1498,10 +1498,7 @@ export class MainActivityComponent implements OnInit, AfterViewInit, OnDestroy {
     // Send to backend via websocket
     this.chatService.sendInsights(message);
     
-    // Listen for response
-    this.chatService.onInsightSaved((response) => {
-      if (response.status === 'success') {
-        // Add to past insights array in frontend
+
         this.pastInsights.unshift({
           text: this.userInsight,
           timestamp: new Date().toLocaleString()
@@ -1513,14 +1510,7 @@ export class MainActivityComponent implements OnInit, AfterViewInit, OnDestroy {
         // Clear the insight field after sending
         this.userInsight = '';
       }
-    });
     
-    this.chatService.onInsightError((error) => {
-      console.error('Error saving insight:', error.error);
-      // You could show an error message to the user here
-      // For example using a toast notification or alert
-    });
-  }
   /**
    * Continue after saving insights
    */

@@ -3,6 +3,7 @@ import { Injectable } from "@angular/core";
 import { Socket } from "ngx-socket-io";
 import { map } from "rxjs/operators";
 import { SessionPage } from "../models/config";
+import { Observable, Subject } from "rxjs";
 
 @Injectable()
 export class ChatService {
@@ -40,6 +41,9 @@ export class ChatService {
     this.vizSocket.emit("on_interaction", payload);
   }
 
+  sendInteraction(payload) {  
+    this.vizSocket.emit("recieve_interaction", payload);
+  }
   getDisconnectEventResponse() {
     return this.vizSocket.fromEvent("disconnect").pipe(map((obj) => obj));
   }
@@ -61,11 +65,12 @@ export class ChatService {
   }
 
   sendQuestionResponse(questionId: string, question: string, response: string) {
+    const userId = localStorage.getItem('userId');
     const payload = {
       question_id: questionId,
       response: response,
       question: question,
-      participant_id: localStorage.getItem('userId'),
+      participant_id: userId,
       timestamp: new Date().toISOString()
     };
     this.vizSocket.emit("on_question_response", payload);
@@ -76,16 +81,9 @@ export class ChatService {
       return obj;
     }));
   }
+  
 
   sendInsights(payload) {
     this.vizSocket.emit("on_insight", payload);
-  }
-
-  onInsightSaved(callback: (response: any) => void) {
-    this.vizSocket.on('insight_saved', callback);
-  }
-
-  onInsightError(callback: (error: any) => void) {
-    this.vizSocket.on('insight_error', callback);
   }
 }
