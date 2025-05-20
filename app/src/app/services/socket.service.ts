@@ -80,4 +80,12 @@ export class ChatService {
   sendInsights(payload) {
     this.vizSocket.emit("on_insight", payload);
   }
+
+  onInsightSaved(callback: (response: any) => void) {
+    this.vizSocket.on('insight_saved', callback);
+  }
+
+  onInsightError(callback: (error: any) => void) {
+    this.vizSocket.on('insight_error', callback);
+  }
 }

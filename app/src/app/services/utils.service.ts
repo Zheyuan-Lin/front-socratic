@@ -341,17 +341,20 @@ export class UtilsService {
         let currentTime = this_.getCurrentTime();
         message.interactionDuration = currentTime - startTime;
         message.interactionType = InteractionTypes.MOUSEOVER_ITEM;
-        message.data["id"] = d[dataset["primaryKey"]];
-        message.data["x"] = {
-          name: dataset["xVar"],
-          value: d["xVar"],
+        message.data = {
+          id: d[dataset["primaryKey"]],
+          x: {
+            name: dataset["xVar"],
+            value: d["xVar"]
+          },
+          y: {
+            name: dataset["yVar"],
+            value: d["yVar"]
+          },
+          eventX: event.clientX,
+          eventY: event.clientY,
+          group: "interaction_trace"
         };
-        message.data["y"] = {
-          name: dataset["yVar"],
-          value: d["yVar"],
-        };
-        message.data["eventX"] = event.clientX;
-        message.data["eventY"] = event.clientY;
         context.chatService.sendInteractionResponse(message);
         /* Prepare and Send New Message - End */
       }, delay);
@@ -376,17 +379,20 @@ export class UtilsService {
       let currentTime = this.getCurrentTime();
       message.interactionDuration = currentTime - startTime;
       message.interactionType = InteractionTypes.MOUSEOUT_ITEM;
-      message.data["id"] = d[dataset["primaryKey"]];
-      message.data["x"] = {
-        name: dataset["xVar"],
-        value: d["xVar"],
+      message.data = {
+        id: d[dataset["primaryKey"]],
+        x: {
+          name: dataset["xVar"],
+          value: d["xVar"]
+        },
+        y: {
+          name: dataset["yVar"],
+          value: d["yVar"]
+        },
+        eventX: event.clientX,
+        eventY: event.clientY,
+        group: "interaction_trace"
       };
-      message.data["y"] = {
-        name: dataset["yVar"],
-        value: d["yVar"],
-      };
-      message.data["eventX"] = event.clientX;
-      message.data["eventY"] = event.clientY;
       context.chatService.sendInteractionResponse(message);
       /* Prepare and Send New Message - End */
     }

@@ -17,6 +17,7 @@ import { DotPlot } from "../visualizations/main/dot-plot-component";
 import { BarChart } from "../visualizations/main/bar-chart-component";
 import { LineChart } from "../visualizations/main/line-chart-component";
 import { AttributeDistributionPlotConfig } from "../visualizations/awareness/component";
+import { Insight } from "../models/message";
 
 window.addEventListener("beforeunload", function (e) {
   // Cancel the event
@@ -1068,10 +1069,17 @@ export class MainActivityComponent implements OnInit, AfterViewInit, OnDestroy {
     let message = this.utilsService.initializeNewMessage(this);
     message.interactionType = InteractionTypes.SWAP_AXES_ATTRIBUTES;
     message.data = {
-      x: dataset["xVar"],
-      y: dataset["yVar"],
+      x: {
+        name: dataset["xVar"],
+        value: null
+      },
+      y: {
+        name: dataset["yVar"],
+        value: null
+      },
+      group: "interaction_trace",
       eventX: null,
-      eventY: null,
+      eventY: null
     };
     this.chatService.sendInteractionResponse(message);
     /* Prepare and Send New Message - End */
@@ -1090,8 +1098,9 @@ export class MainActivityComponent implements OnInit, AfterViewInit, OnDestroy {
     message.interactionType = InteractionTypes.ADD_FILTER;
     message.data = {
       attribute: attribute,
+      group: "interaction_trace",
       eventX: null,
-      eventY: null,
+      eventY: null
     };
     this.chatService.sendInteractionResponse(message);
     /* Prepare and Send New Message - End */
@@ -1122,8 +1131,9 @@ export class MainActivityComponent implements OnInit, AfterViewInit, OnDestroy {
       message.interactionType = InteractionTypes.REMOVE_FILTER;
       message.data = {
         attribute: attribute,
+        group: "interaction_trace",
         eventX: null,
-        eventY: null,
+        eventY: null
       };
       this.chatService.sendInteractionResponse(message);
       /* Prepare and Send New Message - End */
@@ -1143,8 +1153,9 @@ export class MainActivityComponent implements OnInit, AfterViewInit, OnDestroy {
     let message = this.utilsService.initializeNewMessage(this);
     message.interactionType = InteractionTypes.REMOVE_ALL_FILTERS;
     message.data = {
+      group: "interaction_trace",
       eventX: null,
-      eventY: null,
+      eventY: null
     };
     this.chatService.sendInteractionResponse(message);
     /* Prepare and Send New Message - End */
@@ -1169,8 +1180,9 @@ export class MainActivityComponent implements OnInit, AfterViewInit, OnDestroy {
     let message = this.utilsService.initializeNewMessage(this);
     message.interactionType = InteractionTypes.REMOVE_ALL_ENCODINGS;
     message.data = {
+      group: "interaction_trace",
       eventX: null,
-      eventY: null,
+      eventY: null
     };
     this.chatService.sendInteractionResponse(message);
     /* Prepare and Send New Message - End */
@@ -1190,10 +1202,17 @@ export class MainActivityComponent implements OnInit, AfterViewInit, OnDestroy {
       message.interactionType = InteractionTypes.CHANGE_CHART_TYPE;
       message.data = {
         chartChanged: dataset["chartType"],
-        x: dataset["xVar"],
-        y: dataset["yVar"],
+        x: {
+          name: dataset["xVar"],
+          value: null
+        },
+        y: {
+          name: dataset["yVar"],
+          value: null
+        },
+        group: "interaction_trace",
         eventX: null,
-        eventY: null,
+        eventY: null
       };
       this.chatService.sendInteractionResponse(message);
       /* Prepare and Send New Message - End */
@@ -1222,10 +1241,17 @@ export class MainActivityComponent implements OnInit, AfterViewInit, OnDestroy {
       message.interactionType = InteractionTypes.CHANGE_AXIS_ATTRIBUTE;
       message.data = {
         axisChanged: axis,
-        x: dataset["xVar"],
-        y: dataset["yVar"],
+        x: {
+          name: dataset["xVar"],
+          value: null
+        },
+        y: {
+          name: dataset["yVar"],
+          value: null
+        },
+        group: "interaction_trace",
         eventX: null,
-        eventY: null,
+        eventY: null
       };
       this.chatService.sendInteractionResponse(message);
       /* Prepare and Send New Message - End */
@@ -1239,10 +1265,17 @@ export class MainActivityComponent implements OnInit, AfterViewInit, OnDestroy {
     message.interactionType = InteractionTypes.CHANGE_AGGREGATION;
     message.data = {
       aggChanged: dataset["aggType"],
-      x: dataset["xVar"],
-      y: dataset["yVar"],
+      x: {
+        name: dataset["xVar"],
+        value: null
+      },
+      y: {
+        name: dataset["yVar"],
+        value: null
+      },
+      group: "interaction_trace",
       eventX: null,
-      eventY: null,
+      eventY: null
     };
     this.chatService.sendInteractionResponse(message);
     /* Prepare and Send New Message - End */
@@ -1259,8 +1292,9 @@ export class MainActivityComponent implements OnInit, AfterViewInit, OnDestroy {
       message.interactionType = InteractionTypes.CHANGE_ATTRIBUTE_COLOR_BY_MODE;
       message.data = {
         colorBy: event,
+        group: "interaction_trace",
         eventX: null,
-        eventY: null,
+        eventY: null
       };
       this.chatService.sendInteractionResponse(message);
       /* Prepare and Send New Message - End */
@@ -1280,8 +1314,9 @@ export class MainActivityComponent implements OnInit, AfterViewInit, OnDestroy {
       message.interactionType = InteractionTypes.CHANGE_VIS_COLOR_BY_MODE;
       message.data = {
         colorBy: dataset["colorByMode"],
+        group: "interaction_trace",
         eventX: null,
-        eventY: null,
+        eventY: null
       };
       this.chatService.sendInteractionResponse(message);
       /* Prepare and Send New Message - End */
@@ -1298,8 +1333,9 @@ export class MainActivityComponent implements OnInit, AfterViewInit, OnDestroy {
       attribute: attribute,
       value: dataset["attributes"][attribute]["filterModel"],
       filterType: changeType,
+      group: "interaction_trace",
       eventX: null,
-      eventY: null,
+      eventY: null
     };
     this.chatService.sendInteractionResponse(message);
     /* Prepare and Send New Message - End */
@@ -1449,32 +1485,41 @@ export class MainActivityComponent implements OnInit, AfterViewInit, OnDestroy {
    */
   saveUserInsight() {
     if (!this.userInsight.trim()) {
-        return;
+      return;
     }
     
     // Prepare the message
-    let message = this.utilsService.initializeNewMessage(this);
-    message.data = {
-        insight: this.userInsight,
-        timestamp: new Date().toISOString(),
-        group: "interaction_trace",
-        participantId: localStorage.getItem('userId')  // Adding participant ID
-    };
+    let message = new Insight();
+    message.text = this.userInsight;
+    message.timestamp = new Date().toISOString();
+    message.group = "interaction_trace";
+    message.participantId = localStorage.getItem('userId');
     
     // Send to backend via websocket
     this.chatService.sendInsights(message);
     
-    // Add to past insights array in frontend
-    this.pastInsights.unshift({
-        text: this.userInsight,
-        timestamp: new Date().toLocaleString()
+    // Listen for response
+    this.chatService.vizSocket.on('insight_saved', (response) => {
+      if (response.status === 'success') {
+        // Add to past insights array in frontend
+        this.pastInsights.unshift({
+          text: this.userInsight,
+          timestamp: new Date().toLocaleString()
+        });
+        
+        // Update continue button state
+        this.canContinue = this.pastInsights.length >= 5;
+        
+        // Clear the insight field after sending
+        this.userInsight = '';
+      }
     });
     
-    // Update continue button state
-    this.canContinue = this.pastInsights.length >= 5;
-    
-    // Clear the insight field after sending
-    this.userInsight = '';
+    this.chatService.vizSocket.on('insight_error', (error) => {
+      console.error('Error saving insight:', error.error);
+      // You could show an error message to the user here
+      // For example using a toast notification or alert
+    });
   }
   /**
    * Continue after saving insights

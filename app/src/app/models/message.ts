@@ -9,3 +9,10 @@ export class Message {
   participantId: string;
   data: object;
 }
+
+export class Insight {
+  text: string;
+  timestamp: string;
+  group: string;
+  participantId: string;
+}

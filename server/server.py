@@ -156,22 +156,85 @@ async def on_interaction(sid, data):
         CLIENTS[pid]["bias_logs"].append(data)
         metrics = bias.compute_metrics(app_mode, CLIENTS[pid]["bias_logs"])
         response["output_data"] = metrics
-        
-        # Sanitize the data for Firestore
-    interaction_data = {
-            "interaction_type": interaction_type,
-            "participant_id": pid,
-            "timestamp": datetime.now().isoformat()
-    }              
-            # Store in Firestore
-    db.collection('interactions').add(interaction_data)
-    print(f"Stored interaction successfully")
 
-    # # save response
-    # CLIENTS[pid]["response_list"].append(response)
+    try:
+        # Base interaction data
+        interaction_data = {
+            "participant_id": str(pid),
+            "interaction_type": str(interaction_type),
+            "timestamp": datetime.now().isoformat(),
+            "interaction_data": {}
+        }
 
-    # await SIO.emit("log", response)  # send this to all
-    # await SIO.emit("interaction_response", response, room=sid)
+        # Handle different interaction types
+        if interaction_type in ["MOUSEOVER_ITEM", "MOUSEOUT_ITEM"]:
+            interaction_data["interaction_data"] = {
+                "point_id": str(data.get("data", {}).get("id", "")),
+                "x_axis": {
+                    "name": str(data.get("data", {}).get("x", {}).get("name", "")),
+                    "value": str(data.get("data", {}).get("x", {}).get("value", ""))
+                },
+                "y_axis": {
+                    "name": str(data.get("data", {}).get("y", {}).get("name", "")),
+                    "value": str(data.get("data", {}).get("y", {}).get("value", ""))
+                },
+                "mouse_position": {
+                    "x": float(data.get("data", {}).get("eventX", 0)),
+                    "y": float(data.get("data", {}).get("eventY", 0))
+                },
+                "interaction_duration": float(data.get("interactionDuration", 0))
+            }
+        elif interaction_type in ["CHANGE_CHART_TYPE", "CHANGE_AXIS_ATTRIBUTE", "CHANGE_AGGREGATION"]:
+            interaction_data["interaction_data"] = {
+                "chart_type": str(data.get("data", {}).get("chartChanged", "")),
+                "x_axis": {
+                    "name": str(data.get("data", {}).get("x", {}).get("name", "")),
+                    "value": str(data.get("data", {}).get("x", {}).get("value", ""))
+                },
+                "y_axis": {
+                    "name": str(data.get("data", {}).get("y", {}).get("name", "")),
+                    "value": str(data.get("data", {}).get("y", {}).get("value", ""))
+                },
+                "aggregation": str(data.get("data", {}).get("aggChanged", ""))
+            }
+        elif interaction_type in ["ADD_FILTER", "REMOVE_FILTER", "CHANGE_FILTER"]:
+            interaction_data["interaction_data"] = {
+                "attribute": str(data.get("data", {}).get("attribute", "")),
+                "filter_value": str(data.get("data", {}).get("value", "")),
+                "filter_type": str(data.get("data", {}).get("filterType", ""))
+            }
+        elif interaction_type in ["CHANGE_ATTRIBUTE_COLOR_BY_MODE", "CHANGE_VIS_COLOR_BY_MODE"]:
+            interaction_data["interaction_data"] = {
+                "color_mode": str(data.get("data", {}).get("colorBy", ""))
+            }
+        elif interaction_type == "SWAP_AXES_ATTRIBUTES":
+            interaction_data["interaction_data"] = {
+                "x_axis": {
+                    "name": str(data.get("data", {}).get("x", {}).get("name", "")),
+                    "value": str(data.get("data", {}).get("x", {}).get("value", ""))
+                },
+                "y_axis": {
+                    "name": str(data.get("data", {}).get("y", {}).get("name", "")),
+                    "value": str(data.get("data", {}).get("y", {}).get("value", ""))
+                }
+            }
+        else:
+            # For other interaction types, store the raw data
+            interaction_data["interaction_data"] = {
+                "raw_data": data.get("data", {})
+            }
+
+        # Store in Firestore
+        db.collection('interactions').add(interaction_data)
+        print(f"Stored interaction successfully")
+    except Exception as e:
+        print(f"Error storing interaction: {e}")
+
+    # save response
+    CLIENTS[pid]["response_list"].append(response)
+
+    await SIO.emit("log", response)  # send this to all
+    await SIO.emit("interaction_response", response, room=sid)
 
 
 
@@ -216,18 +279,17 @@ async def on_question_response(sid, data):
 
 @SIO.event
 async def on_insight(sid, data):
+    print(f"Received insight from {sid}: {data}")
     insight = {
-        "text": data.get("data", {}).get("insight"),
-        "timestamp": data.get("data", {}).get("timestamp"),
-        "group": data.get("data", {}).get("group"),
-        "participant_id": data.get("data", {}).get("participantId")  
+        "text": data.get("text"),
+        "timestamp": data.get("timestamp"),
+        "group": data.get("group"),
+        "participant_id": data.get("participantId")
     }
-    
+    print(f"Stored insight: {insight}") 
     try:
-        # Store in Firestore
         db.collection('insights').add(insight)
         print(f"Stored insight: {insight}")
-        
     except Exception as e:
         print(f"Error storing insight: {e}")
 
