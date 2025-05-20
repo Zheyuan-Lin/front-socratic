@@ -27,22 +27,21 @@
                 </table>
               </header>
 
+
               <!-- Content: Dataset Select -->
               <div class="m-t-sm">
-                <form class="form-inline display-inline">
+                <div class="form-inline display-inline">
                   <div class="form-group">
                     <div class="input-group">
                       <div class="input-group-prepend">
                         <div class="input-group-text"><i class="fa fa-table"></i></div>
                       </div>
-                      <ng-select [disabled]="true" name="datasetSelect" appendTo="body" [clearable]="false" [searchable]="false"
-                        [ngStyle]="{ width: getSelectWidth(objectKeys(appConfig)) }" [(ngModel)]="global.appMode"
-                        (change)="initLumos()">
-                        <ng-option value="synthetic_voters_v14.csv">voter_info</ng-option>
-                      </ng-select>
+                      <div class="form-control" style="background-color: #f8f9fa;">
+                        voter_info
+                      </div>
                     </div>
                   </div>
-                </form>
+                </div>
               </div>
             </article>
           </div>
