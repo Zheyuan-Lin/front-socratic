@@ -1,0 +1,639 @@
+<!-- Top Navigation Bar -->
+<nav class="navbar navbar-light bg-light">
+  <div class="navbar-collapse collapse show justify-content-between align-items-center w-100" id="collapsingNavbar2">
+    <div class="navbar-brand">Lumos</div>
+  </div>
+</nav>
+
+<!-- The Interface -->
+<div>
+  <as-split direction="horizontal" class="border-light h-full" restrictMove="true">
+    <!-- COLUMN: Data and Attributes -->
+    <as-split-area [size]="20">
+      <as-split direction="vertical" restrictMove="true">
+        <!-- ROW: Dataset Selector -->
+        <as-split-area [size]="15">
+          <div class="list-group h-100" style="overflow: auto">
+            <article class="list-group-item">
+              <!-- Header -->
+              <header class="data-header">
+                <table class="w-100">
+                  <tr>
+                    <td>
+                      <h5 class="display-inline">
+                        <span class="badge badge-secondary">Data</span>
+                      </h5>
+                    </td>
+                  </tr>
+                </table>
+              </header>
+
+              <!-- Content: Dataset Select -->
+              <div class="m-t-sm">
+                <div class="form-inline display-inline">
+                  <div class="form-group">
+                    <div class="input-group">
+                      <div class="input-group-prepend">
+                        <div class="input-group-text"><i class="fa fa-table"></i></div>
+                      </div>
+                      <div class="form-control" style="background-color: #f8f9fa;">
+                        voter_info
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </article>
+          </div>
+        </as-split-area>
+
+        <!-- ROW: Attribute Panel -->
+        <as-split-area [size]="85">
+          <div class="list-group h-100" style="overflow: auto">
+            <article class="list-group-item">
+              <!-- Header -->
+              <header class="attributes-header">
+                <table class="w-100">
+                  <tr>
+                    <td>
+                      <h5 class="display-inline">
+                        <span class="badge badge-secondary">Attributes</span>
+                      </h5>
+                    </td>
+                  </tr>
+                </table>
+              </header>
+
+              <!-- Content: Attributes -->
+              <div class="accordion" id="attributeaccordion">
+                <div *ngFor="let attribute of customSortAttributePanel(appConfig[global.appMode].attributeList);">
+                  <div class="card">
+                    <!-- title="{{appConfig[global.appMode]['attributeInteracted'][attribute]}}" -->
+                    <div class="card-header m-b-0" [ngStyle]="styleAttributePanelCard(attribute)"
+                      id="{{'attributeheading-' + appConfig[global.appMode]['attributes'][attribute]['cleaned']}}"
+                      [attr.data-target]="'#attributecollapse-' + appConfig[global.appMode]['attributes'][attribute]['cleaned']">
+                      <table class="w-100">
+                        <tr>
+                          <td class="float-left"
+                            *ngIf="appConfig[global.appMode].attributeDatatypeList['N'].indexOf(attribute) !== -1">
+                            <span class="text-nowrap"><i class="fa fa-font"></i>&nbsp;&nbsp;{{attribute}}</span>
+                          </td>
+                          <td class="float-left"
+                            *ngIf="appConfig[global.appMode].attributeDatatypeList['O'].indexOf(attribute) !== -1">
+                            <span class="text-nowrap"><i class="fa fa-font"></i>&nbsp;&nbsp;{{attribute}}</span>
+                          </td>
+                          <td class="float-left"
+                            *ngIf="appConfig[global.appMode].attributeDatatypeList['T'].indexOf(attribute) !== -1">
+                            <span class="text-nowrap"><i class="fa fa-calendar"></i>&nbsp;&nbsp;{{attribute}}</span>
+                          </td>
+                          <td class="float-left"
+                            *ngIf="appConfig[global.appMode].attributeDatatypeList['Q'].indexOf(attribute) !== -1">
+                            <span class="text-nowrap"><i class="fa fa-hashtag"></i>&nbsp;&nbsp;{{attribute}}</span>
+                          </td>
+                          <td class="float-right text-right text-nowrap" style="padding: 0">
+                            <button [disabled]="appConfig[global.appMode]['attributes'][attribute]['filter']"
+                              (click)="addFilter(attribute)"
+                              [ngStyle]="{'color':getPanelCardTxtColor(attribute, 'attributes')}"
+                              class="btn btn-sm p-0">
+                              <i class="fa fa-filter"></i>
+                            </button>
+                          </td>
+                        </tr>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </article>
+          </div>
+        </as-split-area>
+      </as-split>
+    </as-split-area>
+
+    <!-- COLUMN: Filters, Encodings, and Configurations -->
+    <as-split-area [size]="20">
+      <as-split direction="vertical" class="border-light" restrictMove="true">
+        <!-- ROW: Encodings -->
+        <as-split-area [size]="34">
+          <div class="list-group h-100" style="overflow-x: hidden">
+            <article class="list-group-item">
+              <!-- Header -->
+              <header class="encoding-header mb-sm">
+                <table class="w-100">
+                  <tr>
+                    <td>
+                      <h5>
+                        <span class="badge badge-secondary">Encoding</span>
+                      </h5>
+                    </td>
+                    <td class="float-right">
+                      <button class="btn btn-light btn-sm" (click)="swapXY()">Swap XY</button>
+                      {{" "}}
+                      <button class="btn btn-light btn-sm" (click)="resetAllEncodings()">
+                        <i class="fa fa-times"></i>
+                      </button>
+                    </td>
+                  </tr>
+                </table>
+              </header>
+
+              <!-- Content -->
+              <div>
+                <form>
+                  <!-- OPTION: Chart Type -->
+                  <div class="row mb-sm">
+                    <label class="col-sm-4 col-form-label">Chart</label>
+                    <div class="col-sm-8">
+                      <ng-select name="chartSelect" [searchable]="false" appendTo="body"
+                        [(ngModel)]="appConfig[global.appMode]['chartType']" (change)="onChangeChart($event)"
+                        (clear)="onChangeChart($event, true)">
+                        <ng-option *ngFor="let c of userConfig['charts']" [value]="c">
+                          {{userConfig['chartMapping'][c]}}
+                        </ng-option>
+                      </ng-select>
+                    </div>
+                  </div>
+
+                  <!-- OPTION: X Attribute -->
+                  <div class="row mb-sm">
+                    <label class="col-sm-4 col-form-label">X Axis</label>
+                    <div class="col-sm-8">
+                      <ng-select class="fa" name="xVarSelect" [searchable]="false" appendTo="body"
+                        [(ngModel)]="appConfig[global.appMode]['xVar']" (change)="onChangeAttribute($event, 'x_axis')"
+                        (clear)="onChangeAttribute($event, 'x_axis', true)">
+                        <!-- Q => Quantitative -->
+                        <ng-container *ngFor="let x of appConfig[global.appMode].attributeDatatypeList['Q']">
+                          <ng-option
+                            *ngIf="x !== appConfig[global.appMode].primaryKey && x !== appConfig[global.appMode].labelKey"
+                            [value]="x">
+                            &#xf292; {{x}}
+                          </ng-option>
+                        </ng-container>
+                        <!-- T => Temporal -->
+                        <ng-container *ngFor="let x of appConfig[global.appMode].attributeDatatypeList['T']">
+                          <ng-option
+                            *ngIf="x !== appConfig[global.appMode].primaryKey && x !== appConfig[global.appMode].labelKey"
+                            [value]="x">
+                            &#xf133; {{x}}
+                          </ng-option>
+                        </ng-container>
+                        <!-- O => Ordinal -->
+                        <ng-container *ngFor="let x of appConfig[global.appMode].attributeDatatypeList['O']">
+                          <ng-option
+                            *ngIf="x !== appConfig[global.appMode].primaryKey && x !== appConfig[global.appMode].labelKey"
+                            [value]="x">
+                            &#xf031; {{x}}
+                          </ng-option>
+                        </ng-container>
+                        <!-- N => Nominal -->
+                        <ng-container *ngFor="let x of appConfig[global.appMode].attributeDatatypeList['N']">
+                          <ng-option
+                            *ngIf="x !== appConfig[global.appMode].primaryKey && x !== appConfig[global.appMode].labelKey"
+                            [value]="x">
+                            &#xf031; {{x}}
+                          </ng-option>
+                        </ng-container>
+                      </ng-select>
+                    </div>
+                  </div>
+
+                  <!-- OPTION: Y Attribute -->
+                  <div class="row mb-sm">
+                    <label class="col-sm-4 col-form-label">Y Axis</label>
+                    <div class="col-sm-8">
+                      <ng-select class="fa" name="yVarSelect" [searchable]="false" appendTo="body"
+                        [(ngModel)]="appConfig[global.appMode]['yVar']" (change)="onChangeAttribute($event, 'y_axis')"
+                        (clear)="onChangeAttribute($event, 'y_axis', true)">
+                        <!-- Q => Quantitative -->
+                        <ng-container *ngFor="let y of appConfig[global.appMode].attributeDatatypeList['Q']">
+                          <ng-option
+                            *ngIf="y !== appConfig[global.appMode].primaryKey && y !== appConfig[global.appMode].labelKey"
+                            [value]="y">
+                            &#xf292; {{y}}
+                          </ng-option>
+                        </ng-container>
+                        <!-- T => Temporal -->
+                        <ng-container *ngFor="let y of appConfig[global.appMode].attributeDatatypeList['T']">
+                          <ng-option
+                            *ngIf="y !== appConfig[global.appMode].primaryKey && y !== appConfig[global.appMode].labelKey"
+                            [value]="y">
+                            &#xf133; {{y}}
+                          </ng-option>
+                        </ng-container>
+                        <!-- O => Ordinal -->
+                        <ng-container *ngFor="let y of appConfig[global.appMode].attributeDatatypeList['O']">
+                          <ng-option
+                            *ngIf="y !== appConfig[global.appMode].primaryKey && y !== appConfig[global.appMode].labelKey"
+                            [value]="y">
+                            &#xf031; {{y}}
+                          </ng-option>
+                        </ng-container>
+                        <!-- N => Nominal -->
+                        <ng-container *ngFor="let y of appConfig[global.appMode].attributeDatatypeList['N']">
+                          <ng-option
+                            *ngIf="y !== appConfig[global.appMode].primaryKey && y !== appConfig[global.appMode].labelKey"
+                            [value]="y">
+                            &#xf031; {{y}}
+                          </ng-option>
+                        </ng-container>
+                      </ng-select>
+                    </div>
+                  </div>
+
+                  <!-- OPTION: Aggregation -->
+                  <div *ngIf="appConfig[global.appMode]['xVar'] && appConfig[global.appMode]['yVar']">
+                    <div *ngIf="['barchart', 'linechart'].indexOf(appConfig[global.appMode]['chartType']) !== -1"
+                      class="row mb-sm">
+                      <label class="col-sm-4 col-form-label">Agg</label>
+                      <div class="col-sm-8">
+                        <ng-select name="aggTypeSelect" [searchable]="false" appendTo="body"
+                          [(ngModel)]="appConfig[global.appMode]['aggType']" (change)="onChangeAggregation($event)"
+                          [clearable]="false">
+                          <ng-option *ngFor="let a of userConfig['aggregations']" [value]="a">
+                            {{userConfig['aggregationMapping'][a]}}
+                          </ng-option>
+                        </ng-select>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- OPTION: Color By -->
+                  <div *ngIf="global.appType != 'CONTROL'" class="row mb-sm">
+                    <label class="col-sm-4 col-form-label">Color By</label>
+                    <div class="col-sm-8">
+                      <ng-select name="visColorByModeSelect" [searchable]="false" [clearable]="false" appendTo="body"
+                        [(ngModel)]="appConfig[global.appMode]['colorByMode']" (change)="onChangeVISColorByMode($event)"
+                        (clear)="onChangeColorByMode($event, true)">
+                        <ng-option *ngFor="let m of userConfig['colorByModes']" [value]="m">
+                          {{userConfig['colorByModeMapping'][m]}}
+                        </ng-option>
+                      </ng-select>
+                    </div>
+                  </div>
+                </form>
+              </div>
+            </article>
+          </div>
+        </as-split-area>
+
+        <!-- ROW: Filters -->
+        <as-split-area [size]="global.appType == 'ADMIN' ? 33 : 66">
+          <div class="list-group h-100">
+            <article class="list-group-item">
+              <!-- Header -->
+              <header class="filter-header">
+                <table class="w-100">
+                  <tr>
+                    <td>
+                      <h5>
+                        <span class="badge badge-secondary">Filters</span>
+                      </h5>
+                    </td>
+                    <td class="float-right">
+                      <button class="btn btn-light btn-sm" (click)="removeFilters()">
+                        <i class="fa fa-times"></i>
+                      </button>
+                    </td>
+                  </tr>
+                </table>
+              </header>
+
+              <!-- Content -->
+              <div>
+                <form>
+                  <!-- OPTION: Nominal Attributes -->
+                  <div class="form-group"
+                    *ngFor="let attribute of appConfig[global.appMode].attributeDatatypeList['N'];">
+                    <ng-container *ngIf="appConfig[global.appMode]['attributes'][attribute]['filter']">
+                      <span>
+                        <label class="form-label" for="{{'select_' + attribute}}">{{attribute}}</label>
+                        <button class="btn btn-light btn-sm float-right" (click)="removeFilter(attribute)">
+                          <i class="fa fa-times"></i>
+                        </button>
+                      </span>
+                      <ng-multiselect-dropdown name="{{'select_' + attribute}}" [placeholder]="' '" appendTo="body"
+                        [data]="appConfig[global.appMode]['attributes'][attribute]['types']"
+                        [(ngModel)]="appConfig[global.appMode]['attributes'][attribute]['filterModel']"
+                        [settings]="userConfig['filterMultiselectDropdownSettings']"
+                        (onSelect)="onChangeFilter(attribute, 'select')"
+                        (onSelectAll)="onChangeFilter(attribute, 'selectAll')"
+                        (onDeSelect)="onChangeFilter(attribute, 'deselect')"
+                        (onDeSelectAll)="onChangeFilter(attribute, 'deselectAll')">
+                      </ng-multiselect-dropdown>
+                      <hr class="separator" />
+                    </ng-container>
+                  </div>
+
+                  <!-- OPTION: Quantitative Attributes -->
+                  <div class="form-group"
+                    *ngFor="let attribute of appConfig[global.appMode].attributeDatatypeList['Q'];">
+                    <ng-container *ngIf="appConfig[global.appMode]['attributes'][attribute]['filter']">
+                      <span>
+                        <label class="form-label" for="{{'slider_' + attribute}}">{{attribute}}</label>
+                        <button class="btn btn-light btn-sm float-right" (click)="removeFilter(attribute)">
+                          <i class="fa fa-times"></i>
+                        </button>
+                      </span>
+                      <div class="q-filter-slider">
+                        <nouislider name="{{'slider_' + attribute}}" [config]="qFilterSliderConfig(attribute)"
+                          [behaviour]="drag" [connect]="true"
+                          [(ngModel)]="appConfig[global.appMode]['attributes'][attribute]['filterModel']"
+                          (change)="onChangeFilter(attribute, 'sliderChange')">
+                        </nouislider>
+                        <hr class="separator" />
+                      </div>
+                    </ng-container>
+                  </div>
+
+                  <!-- OPTION: Temporal Attributes -->
+                  <div class="form-group"
+                    *ngFor="let attribute of appConfig[global.appMode].attributeDatatypeList['T'];">
+                    <ng-container *ngIf="appConfig[global.appMode]['attributes'][attribute]['filter']">
+                      <span>
+                        <label class="form-label" for="{{'slider_' + attribute}}">{{attribute}}</label>
+                        <button class="btn btn-light btn-sm float-right" (click)="removeFilter(attribute)">
+                          <i class="fa fa-times"></i>
+                        </button>
+                      </span>
+                      <div class="q-filter-slider">
+                        <nouislider name="{{'slider_' + attribute}}" [config]="{
+                            'pips': { mode: 'count', values: 3, density: 10 }
+                          }" [behaviour]="drag" [connect]="true"
+                          [step]="appConfig[global.appMode]['attributes'][attribute]['step']"
+                          [min]="appConfig[global.appMode]['attributes'][attribute]['min']"
+                          [max]="appConfig[global.appMode]['attributes'][attribute]['max']"
+                          [(ngModel)]="appConfig[global.appMode]['attributes'][attribute]['filterModel']"
+                          (change)="onChangeFilter(attribute, 'sliderChange')" [tooltips]="[ true, true ]">
+                        </nouislider>
+                        <hr class="separator" />
+                      </div>
+                    </ng-container>
+                  </div>
+                </form>
+              </div>
+            </article>
+          </div>
+        </as-split-area>
+
+        <!-- ROW: User Insights -->
+        <as-split-area [size]="33">
+          <div class="list-group h-100">
+            <article class="list-group-item">
+              <!-- Header -->
+              <header class="insights-header">
+                <table class="w-100">
+                  <tr>
+                    <td>
+                      <h5>
+                        <span class="badge badge-secondary">Your Insights</span>
+                      </h5>
+                    </td>
+                  </tr>
+                </table>
+              </header>
+              
+
+              
+
+              <!-- Content -->
+              <div class="insights-content">
+                <div class="form-group">
+                  <label for="userInsight">Share your insights about the data:</label>
+                  <textarea 
+                    id="userInsight" 
+                    class="form-control" 
+                    rows="4" 
+                    placeholder="Write your insights here..."
+                    [(ngModel)]="userInsight">
+                  </textarea>
+                </div>
+                <div class="text-right mt-2">
+                  <button 
+                    class="btn btn-secondary" 
+                    (click)="saveUserInsight()" 
+                    [disabled]="!userInsight.trim()"
+                    style="background-color: #6c757d; border-color: #6c757d;">
+                    <i class="fa fa-save mr-1"></i> Send Insight
+                  </button>
+                </div>
+                
+                <!-- Past Insights Section -->
+                <div class="past-insights mt-4" *ngIf="pastInsights.length > 0">
+                  <h6 class="mb-3">Your Past Insights</h6>
+                  <div class="insight-list">
+                    <div class="insight-item" *ngFor="let insight of pastInsights">
+                      <div class="insight-text">{{insight.text}}</div>
+                      <div class="insight-timestamp text-muted">
+                        <small><i class="fa fa-clock-o mr-1"></i> {{insight.timestamp}}</small>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+              </div>
+            </article>
+          </div>
+        </as-split-area>
+      </as-split>
+    </as-split-area>
+
+    <!-- COLUMN: Main VIS -->
+    <as-split-area [size]="global.appType !== 'CONTROL' ? 40 : 60" class="w-100">
+      <as-split direction="vertical" restrictMove="true" class="w-100">
+        <!-- ROW: Plot Container -->
+        <as-split-area [size]="68" style="position: relative">
+          <article style="position: absolute; top: 0; left: 0; border: none; padding: 10px 0 0 10px">
+            <header class="main-vis-header">
+              <table class="w-100 m-b-0">
+                <tr>
+                  <td class="p-0 m-0">
+                    <h5 class="p-0 m-0">
+                      <span class="badge badge-secondary">Visualization</span>
+                    </h5>
+                  </td>
+                </tr>
+              </table>
+            </header>
+          </article>
+          <div id="plot_container"></div>
+        </as-split-area>
+
+        <!-- ROW: Selected Object(s) -->
+        <as-split-area #selected_objects_container [size]="32" style="overflow: hidden">
+          <!-- Default Hover Table (for Scatter*/Strip Plots) -->
+          <div *ngIf="['dotplot', 'barchart', 'linechart'].indexOf(currentPlotInstance) === -1" class="list-group h-100"
+            style="overflow-x: hidden">
+            <article class="list-group-item">
+              <!-- Header -->
+                <table class="w-100">
+                  <tr>
+                    <td>
+                      <h5>
+                        <span class="badge badge-secondary">Details</span>
+                      </h5>
+                    </td>
+                  </tr>
+                </table>
+
+
+
+              <!-- Content -->
+              <div class="row single-table">
+                <div *ngFor="let chunk of utilsService.chunkAttrArray(appConfig[global.appMode]);"
+                  class="col-sm-6 attr-col">
+                  <table>
+                    <tbody>
+                      <ng-container *ngFor="let attr of chunk">
+                        <tr *ngIf="attr !== appConfig[global.appMode].labelKey" class="attr-row">
+                          <td>
+                            <span class="text-muted">{{attr}}</span>
+                          </td>
+                          <td *ngIf="appConfig[global.appMode].attributeDatatypeList['Q'].indexOf(attr) !== -1">
+                            <strong>{{utilsService.formatLargeNum(+appConfig[global.appMode]['hoveredObject'][attr])}}</strong>
+                          </td>
+                          <td *ngIf="appConfig[global.appMode].attributeDatatypeList['Q'].indexOf(attr) === -1">
+                            <strong>{{appConfig[global.appMode]['hoveredObject'][attr]}}</strong>
+                          </td>
+                        </tr>
+                      </ng-container>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </article>
+          </div>
+
+          <!-- Hover Table for Dot Plot and Bar/Line Charts -->
+          <div *ngIf="['dotplot', 'barchart', 'linechart'].indexOf(currentPlotInstance) !== -1" class="list-group">
+            <article class="list-group-item">
+              <!-- Header -->
+              <header #table_header class="details-header">
+                <table class="w-100">
+                  <tr>
+                    <td>
+                      <h5>
+                        <span class="badge badge-secondary">Details</span>
+                        &nbsp;
+                        <span class="text-muted">{{getDetailsTableHeader()}}</span>
+                      </h5>
+                    </td>
+                  </tr>
+                </table>
+              </header>
+
+              <!-- Content -->
+              <overlay-scrollbars [options]="getDetailsTableScrollbarOptions()" style="padding: 12px 0 0 12px">
+                <div class="group-table"
+                  [style.height.px]="selected_objects_container.offsetHeight - table_header.offsetHeight - 32">
+                  <table class="text-nowrap">
+                    <thead>
+                      <tr class="group-table-header">
+                        <ng-container *ngFor="let attr of appConfig[global.appMode].attributeList">
+                          <th *ngIf="attr !== appConfig[global.appMode].labelKey">
+                            <strong>{{attr}}</strong>
+                          </th>
+                        </ng-container>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr *ngFor="let dataPoint of objectValues(appConfig[global.appMode]['hoveredObjects']['points'])"
+                        class="group-table-item"
+                        [ngClass]="{'textLight': dataPoint['ratioTimesVisited'] >= 0.7, 'textDark': dataPoint['ratioTimesVisited'] < 0.7 }"
+                        [style.background-color]="dataPoint['color']" (mouseover)="mouseoverRow($event, dataPoint)"
+                        (mouseout)="mouseoutRow($event, dataPoint)">
+                        <ng-container *ngFor="let attr of appConfig[global.appMode].attributeList">
+                          <td *ngIf="attr !== appConfig[global.appMode].labelKey">
+                            <div style="text-align: right"
+                              *ngIf="appConfig[global.appMode].attributeDatatypeList['Q'].indexOf(attr) !== -1">
+                              {{utilsService.formatLargeNum(+dataPoint[attr])}}
+                            </div>
+                            <div style="text-align: left"
+                              *ngIf="appConfig[global.appMode].attributeDatatypeList['N'].indexOf(attr) !== -1">
+                              {{dataPoint[attr]}}
+                            </div>
+                            <div style="text-align: left"
+                              *ngIf="appConfig[global.appMode].attributeDatatypeList['O'].indexOf(attr) !== -1">
+                              {{dataPoint[attr]}}
+                            </div>
+                            <div style="text-align: right"
+                              *ngIf="appConfig[global.appMode].attributeDatatypeList['T'].indexOf(attr) !== -1">
+                              {{dataPoint[attr]}}
+                            </div>
+                          </td>
+                        </ng-container>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </overlay-scrollbars>
+            </article>
+          </div>
+        </as-split-area>
+      </as-split>
+    </as-split-area>
+  </as-split>
+</div>
+
+<!-- Continue Button - Fixed at bottom right -->
+<div class="continue-button-container">
+  <button 
+    class="btn circular-btn" 
+    (click)="continueAfterInsights()" 
+    [disabled]="!canContinue || !canContinueTime"
+    [title]="getButtonTooltip()"
+    [ngClass]="{'tooltip-active': !canContinue || !canContinueTime}"
+  >
+    <i class="fa fa-arrow-right"></i>
+    <span class="tooltip-text" *ngIf="!canContinue || !canContinueTime">
+      <ng-container *ngIf="!canContinueTime">
+        {{formatTime()}} left
+      </ng-container>
+      <ng-container *ngIf="!canContinue">
+        and {{5 - pastInsights.length}} more insight{{5 - pastInsights.length === 1 ? '' : 's'}} needed
+      </ng-container>
+    </span>
+  </button>
+</div>
+
+<!-- Enhanced Question Popup -->
+<div id="popup-window" class="popup-window" *ngIf="isPopupVisible" [ngClass]="{'minimized': isMinimized}">
+  <div class="popup-header">
+    <h4>
+      <i class="fa fa-question-circle mr-2" style="margin-right: 8px; color: #6c757d;"></i>
+      Question
+    </h4>
+    <div class="popup-controls">
+      <button type="button" (click)="toggleMinimize()" title="{{isMinimized ? 'Expand' : 'Minimize'}}">
+        <i class="fa" [ngClass]="isMinimized ? 'fa-expand' : 'fa-compress'"></i>
+      </button>
+      <button type="button" (click)="isPopupVisible = false" title="Close" *ngIf="!isMinimized">
+        <i class="fa fa-times"></i>
+      </button>
+    </div>
+  </div>
+  
+  <div class="popup-content" *ngIf="!isMinimized">
+    <p>{{popupQuestion}}</p>
+    
+    <div class="popup-response-area">
+      <textarea 
+        [(ngModel)]="popupResponse"
+        placeholder="Type your response here..."
+        rows="3"
+        class="form-control">
+      </textarea>
+      
+      <div style="display: flex; justify-content: flex-end;">
+        <button 
+          (click)="sendPopupResponse()"
+          [disabled]="!popupResponse.trim()"
+          class="btn btn-secondary"
+          style="background-color: #6c757d; border-color: #6c757d;">
+          <i class="fa fa-save mr-1" style="margin-right: 5px;"></i>
+          Send Response
+        </button>
+
+      </div>
+    </div>
+  </div>
+</div>
